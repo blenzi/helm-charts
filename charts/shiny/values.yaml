@@ -5,11 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: rocker/shiny
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "4.2.0"
-  pullPolicy: IfNotPresent
-  containerPort: 3838
+  repository: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/pnm3/produits/doc/liseuses/cgdd/liriae-front
+  tag: v2.0.4
+  containerPort: 80
 
 security:
   networkPolicy: 
@@ -19,7 +17,8 @@ security:
     enabled: true
     ip: "0.0.0.0/0"
 
-imagePullSecrets: []
+imagePullSecrets:
+- name: regcred-liriae
 nameOverride: ""
 fullnameOverride: ""
 
@@ -60,7 +59,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
   ingressClassName: ""
-  hostname: chart-example.local
+  hostname: liriae-env.lab.sspcloud.fr
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -122,3 +121,12 @@ postgresql:
   containerPorts:
     postgresql: 5432
   fullnameOverride: ""
+
+volumes:
+- name: liriae-front-environment
+  configMap:
+    name: liriae-front-configmap
+volumeMounts:
+- name: liriae-front-environment
+  mountPath: "/app/config.js"
+  subPath: config.js
